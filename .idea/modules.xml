@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/Pnopbot.iml" filepath="$PROJECT_DIR$/.idea/Pnopbot.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/pnopbot.iml" filepath="$PROJECT_DIR$/.idea/pnopbot.iml" />
     </modules>
   </component>
 </project>
