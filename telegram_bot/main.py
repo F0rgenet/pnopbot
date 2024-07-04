@@ -11,8 +11,6 @@ from aiogram.exceptions import TelegramUnauthorizedError
 from telegram_bot.database import register_models
 from .handlers import router as handlers_router
 
-bot = Bot(token=os.getenv("TELEGRAM_BOT_TOKEN"), default=DefaultBotProperties(parse_mode='HTML'))
-
 
 async def on_startup(dispatcher: Dispatcher):
     await register_models()
@@ -32,6 +30,7 @@ async def startup():
     dispatcher.startup.register(on_startup)
     dispatcher.shutdown.register(on_shutdown)
     try:
+        bot = Bot(token=os.getenv("TELEGRAM_BOT_TOKEN"), default=DefaultBotProperties(parse_mode='HTML'))
         await dispatcher.start_polling(bot)
     except (TokenValidationError, TelegramUnauthorizedError):
         logger.error("Telegram API токен в .env некорректен (TELEGRAM_BOT_TOKEN)")
