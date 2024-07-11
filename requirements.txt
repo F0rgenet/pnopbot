@@ -3,3 +3,5 @@ aiogram~=3.8.0
 SQLAlchemy~=2.0.30
 aiosqlite~=0.20.0
 aiogram-dialog~=2.2.0a4
+alembic~=1.13.2
+aiofiles~=24.1.0

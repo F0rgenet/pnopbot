@@ -1,12 +1,16 @@
 from aiogram import Router
 
-from .auth import router as auth_router
-from .user import router as user_router
-from .tasks import router as tasks_router
-from .admin import router as admin_router
+from .main import router as main_router
+from telegram_bot.dialogs.menu import menu_dialog
+from telegram_bot.dialogs.tasks import tasks_dialog
+from telegram_bot.dialogs.settings import settings_dialog
+from telegram_bot.dialogs.auth import auth_dialog
 
 router = Router()
-router.include_router(auth_router)
-router.include_router(user_router)
-router.include_router(tasks_router)
-router.include_router(admin_router)
+
+router.include_router(main_router)
+
+router.include_router(menu_dialog)
+router.include_router(settings_dialog)
+router.include_router(tasks_dialog)
+router.include_router(auth_dialog)

@@ -3,7 +3,7 @@ import re
 import aiofiles
 
 
-def validate_name(name_input: str) -> bool:
+def validate_full_name(name_input: str) -> bool:
     """
     Проверяет, соответствует ли введенная строка формату "Имя Фамилия" на русском языке.
 
@@ -13,7 +13,7 @@ def validate_name(name_input: str) -> bool:
     Returns:
       True, если ввод корректный, иначе False.
     """
-    pattern = r"^[А-Яа-яЁё]+\s[А-Яа-яЁё]+$"
+    pattern = r"^[a-zA-Zа-яА-ЯёЁ]+\s[a-zA-Zа-яА-ЯёЁ]+\s[a-zA-Zа-яА-ЯёЁ]+$"
     match = re.match(pattern, name_input)
     return bool(match)
 
