@@ -23,8 +23,7 @@ class UserMiddleware(BaseMiddleware):
             return handler(event, data)
         user = await user_service.get_or_create_user(
             telegram_id=telegram_user.id,
-            username=telegram_user.username,
-            full_name=telegram_user.full_name
+            username=telegram_user.username
         )
         data['user'] = user
         return await handler(event, data)
