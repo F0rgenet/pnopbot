@@ -3,14 +3,14 @@ import queue
 
 from aiogram import F
 from aiogram.types import CallbackQuery
-from aiogram_dialog import Dialog, Window, DialogManager, ShowMode
+from aiogram_dialog import Dialog, Window, DialogManager
 from aiogram_dialog.widgets.kbd import Group, Select, Button, Radio, SwitchTo
 from aiogram_dialog.widgets.text import Const, Format
 
-from telegram_bot.dialogs.states import Tasks
-from telegram_bot.services import CategoryService, TaskService, UserService
-from telegram_bot.utils.dialog_constants import back_button, home_button
 from telegram_bot.database import Task
+from telegram_bot.dialogs.states import Tasks
+from telegram_bot.services import CategoryService, UserService
+from telegram_bot.utils.dialog_constants import home_button
 
 
 async def get_categories_data(dialog_manager: DialogManager, **kwargs):
