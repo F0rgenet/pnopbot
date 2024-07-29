@@ -33,6 +33,7 @@ class UserProgress(Database.BASE):
     task_id = Column(Integer, ForeignKey('tasks.id'))
     is_completed = Column(Boolean, default=False)
     score = Column(Integer, default=0)
+    started_at = Column(DateTime(timezone=True))
     completed_at = Column(DateTime(timezone=True))
     response_time = Column(Integer)  # в секундах
 

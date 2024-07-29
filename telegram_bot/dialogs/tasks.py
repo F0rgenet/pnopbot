@@ -1,3 +1,4 @@
+import random
 import operator
 import queue
 
@@ -52,13 +53,14 @@ async def get_next_task(dialog_manager: DialogManager, **kwargs):
     dialog_manager.dialog_data["current_task"] = current_task
     dialog_manager.dialog_data["current_answer_response"] = "❌Неверно"
     options = [(option.content, option.id) for option in current_task.options]
+    random.shuffle(options)
     tasks_queue.task_done()
     return {"task": current_task, "options": options}
 
 
 async def on_answer_selected(callback: CallbackQuery, widget: Radio, dialog_manager: DialogManager, item_id: str):
     await dialog_manager.switch_to(state=Tasks.TASK_DONE)
-    task = dialog_manager.dialog_data["current_task"]
+    task: Task = dialog_manager.dialog_data["current_task"]
     user_service: UserService = dialog_manager.middleware_data["user_service"]
 
     selected_option = next(option for option in task.options if option.id == int(item_id))
