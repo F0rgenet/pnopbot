@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Optional, Sequence
 
 from loguru import logger
-from sqlalchemy import select
+from sqlalchemy import select, func
 from sqlalchemy.exc import MultipleResultsFound
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -96,7 +96,15 @@ class UserService:
         query = select(Task).join(UserProgress).filter(
             UserProgress.user_id == user_id
         )
+        # TODO: Rename "completed" to "correct solved"
         if only_completed_tasks:
             query = query.filter(UserProgress.is_completed == True)
         result = await self.session.execute(query)
         return result.scalars().all()
+
+    async def get_average_answer_time(self, user_id: int) -> float:
+        query = select(func.avg(UserProgress.response_time)).filter(
+            UserProgress.user_id == user_id
+        )
+        result = await self.session.execute(query)
+        return round(result.scalar_one(), 2)

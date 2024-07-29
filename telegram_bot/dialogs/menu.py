@@ -37,7 +37,7 @@ async def get_profile_data(dialog_manager: DialogManager, **kwargs):
         "leaderboard_position": user_rank_text,
         "completed_tasks": completed_tasks,
         "correct_answers": correct_answers,
-        "average_answer_time": 0
+        "average_answer_time": await user_service.get_average_answer_time(user.id),
     }
 
 
