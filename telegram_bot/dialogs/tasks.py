@@ -42,12 +42,14 @@ async def on_category_selection_done(callback: CallbackQuery, widget: Button, di
         tasks_queue.put(task)
     dialog_manager.dialog_data["selected_tasks_queue"] = tasks_queue
     dialog_manager.dialog_data["answers"] = []
+    dialog_manager.dialog_data["current_user_id"] = callback.from_user.id
     await dialog_manager.switch_to(state=Tasks.TASK_ACTIVE)
 
 
 async def get_next_task(dialog_manager: DialogManager, **kwargs):
     tasks_queue: queue.Queue = dialog_manager.dialog_data.get("selected_tasks_queue")
     current_task: Task = tasks_queue.get()
+    user_service: UserService = dialog_manager.middleware_data["user_service"]
     if not current_task:
         return await dialog_manager.done()
     dialog_manager.dialog_data["current_task"] = current_task
@@ -55,6 +57,8 @@ async def get_next_task(dialog_manager: DialogManager, **kwargs):
     options = [(option.content, option.id) for option in current_task.options]
     random.shuffle(options)
     tasks_queue.task_done()
+    user_id = dialog_manager.dialog_data["current_user_id"]
+    await user_service.add_user_progress(user_id, current_task)
     return {"task": current_task, "options": options}
 
 

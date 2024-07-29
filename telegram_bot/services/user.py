@@ -1,8 +1,10 @@
-from typing import Optional, List, Sequence
+from datetime import datetime
+from typing import Optional, Sequence
 
-from sqlalchemy import select, func
-from sqlalchemy.ext.asyncio import AsyncSession
 from loguru import logger
+from sqlalchemy import select
+from sqlalchemy.exc import MultipleResultsFound
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from telegram_bot.database import Task
 from telegram_bot.database.models import User, UserProgress, StudentGroup
@@ -12,8 +14,7 @@ class UserService:
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def get_or_create_user(self, telegram_id: int, username: Optional[str] = None,
-                                 full_name: Optional[str] = None) -> User:
+    async def get_or_create_user(self, telegram_id: int, username: Optional[str] = None) -> User:
         result = await self.session.execute(select(User).filter(User.telegram_id == telegram_id))
         user = result.scalar_one_or_none()
         if not user:
@@ -65,18 +66,27 @@ class UserService:
         await self.session.commit()
         logger.success(f"Обновлена статистика пользователя {user.full_name}")
 
+    async def add_user_progress(self, user_id: int, task: Task):
+        user_progress = UserProgress(user_id=user_id, task_id=task.id, started_at=datetime.now())
+        self.session.add(user_progress)
+        await self.session.commit()
+
     async def update_user_progress(self, user_id: int, task: Task, is_completed: bool = False):
-        user_progress = await self.session.execute(
+        user_progress_query = await self.session.execute(
             select(UserProgress).filter(UserProgress.user_id == user_id, UserProgress.task_id == task.id)
         )
-        user_progress = user_progress.scalar_one_or_none()
-        user = await self.get_user(user_id)
+        try:
+            user_progress: UserProgress = user_progress_query.scalar_one_or_none()
+        except MultipleResultsFound:
+            logger.error(f"Пользователь пытается решить одно и то же задание дважды, user: {user_id}, task: {task.id}")
+            return None
         if not user_progress:
-            user_progress = UserProgress(user_id=user.id, task_id=task.id)
-            self.session.add(user_progress)
+            logger.error(f"Не существует прогресс данного пользователя, user: {user_id}, task: {task.id}")
+            return None
         user_progress.is_completed = is_completed
         user_progress.score = task.points
-        user_progress.completed_at = func.now()
+        user_progress.completed_at = datetime.now()
+        user_progress.response_time = (user_progress.completed_at - user_progress.started_at).total_seconds()
         await self.session.commit()
         await self.update_user_stats(user_id)
         logger.success(f"Обновлён прогресс пользователя {user_id}")
