@@ -42,7 +42,8 @@ async def on_category_selection_done(callback: CallbackQuery, widget: Button, di
         tasks_queue.put(task)
     dialog_manager.dialog_data["selected_tasks_queue"] = tasks_queue
     dialog_manager.dialog_data["answers"] = []
-    dialog_manager.dialog_data["current_user_id"] = callback.from_user.id
+    user_service: UserService = dialog_manager.middleware_data["user_service"]
+    dialog_manager.dialog_data["current_user_id"] = (await user_service.get_user(callback.from_user.id)).id
     await dialog_manager.switch_to(state=Tasks.TASK_ACTIVE)
 
 
